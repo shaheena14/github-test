@@ -15,4 +15,5 @@ angular.module('myApp.view1', ['ngRoute'])
     // another comment
     // one more
     //another
+    // another one
 }]);

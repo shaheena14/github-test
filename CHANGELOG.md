@@ -3,7 +3,7 @@
 ## [v0.1.1](https://github.com/tocker/github-test/tree/v0.1.1)
 [Full Changelog](https://github.com/tocker/github-test/compare/0.1.1...v0.1.1)
 #### 11/02/15
-- *Merged pull-request:* Add comment to view [\#1](https://github.com/tocker/github-test/pull/1) ([tocker](https://github.com/tocker))
+ *Merged pull-request:* Add comment to view [\#1](https://github.com/tocker/github-test/pull/1) ([tocker](https://github.com/tocker))
 ## [0.1.1](https://github.com/tocker/github-test/tree/0.1.1)
 [Full Changelog](https://github.com/tocker/github-test/compare/v0.1.0...0.1.1)
 #### 25/01/15

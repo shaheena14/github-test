@@ -297,3 +297,4 @@ For more information on AngularJS please check out http://angularjs.org/
 [http-server]: https://github.com/nodeapps/http-server
 
 Minor change for pull request test
+Another minor change

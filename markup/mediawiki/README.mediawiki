@@ -1,0 +1,286 @@
+
+= Cloudinary - bower and npm repository =
+
+This is a distribution repository for <code>bower</code> and <code>npm</code>. The sources for this repository are maintained at the [https://github.com/cloudinary/cloudinary_js cloudinary_js repository]. Please submit issues and pull requests to that repository.
+
+
+Cloudinary is a cloud service that offers a solution to a web application's entire image management pipeline.
+
+
+Easily upload images to the cloud. Automatically perform smart image resizing, cropping and conversion without installing any complex software. Integrate Facebook or Twitter profile image extraction in a snap, in any dimension and style to match your website’s graphics requirements. Images are seamlessly delivered through a fast CDN, and much much more.
+
+
+Cloudinary offers comprehensive APIs and administration capabilities and is easy to integrate with any web application, existing or new.
+
+
+Cloudinary provides URL and HTTP based APIs that can be easily integrated with any Web development framework.
+
+
+For Javascript, Cloudinary provides a jQuery plugin for simplifying the integration even further.
+
+
+The direct image upload feature of the plugin is based on https://github.com/blueimp/jQuery-File-Upload
+
+
+== Getting started guide ==
+
+[[Image:see_more_bullet.png]] '''Take a look at our [http://cloudinary.com/documentation/jquery_integration#getting_started_guide Getting started guide for jQuery]'''.
+
+
+== :construction: New API! ==
+
+The Javascript library has undergone an extensive redesign. Previously, the library was deeply coupled with jQuery and the Blueimp upload plugin. In order to cater for developer who do not wish to use jQuery, the library has been split into three libraries:
+
+
+* A core Javascript library that does not depend on jQuery or Blueimp,
+* A jQuery plugin library.
+* A library that includes both the jQuery and the Blueimp functionality (which is fully backward compatible with previous versions).
+
+== Installation ==
+
+=== bower ===
+
+# Install the files using the following command. Use the optional <code>--save</code> parameter if you wish to save the dependency in your bower.json file. <code>shell bower install cloudinary</code>
+# Include the javascript file in your HTML. For Example:  <code>&lt;script src=&quot;../bower_components/cloudinary_js/js/cloudinary.js&quot;&gt;&lt;/script&gt;</code>
+
+== Setup ==
+
+In order to properly use this library you have to provide it with a few configuration parameters:
+
+
+Required:
+
+
+* <code>cloud_name</code> - The cloudinary cloud name associated with your Cloudinary account.
+
+Optional:
+
+
+* <code>private_cdn</code>, <code>secure_distribution</code>, <code>cname</code>, <code>cdn_subdomain</code> - Please refer to [http://cloudinary.com/documentation/rails_additional_topics#configuration_options Cloudinary Documentation] for information on these parameters.
+
+To set these configuration parameters use the <code>Cloudinary::config</code> function (see below).
+
+
+Note:
+
+
+When loading the jQuery Cloudinary library directly (using a <code>script</code> tag), the library automatically converts the relevant fileupload tags to utilize the upload functionality. If jquery.cloudinary is loaded as an [https://github.com/amdjs/amdjs-api/blob/master/AMD.md AMD] however, you need to initialize the Cloudinary fileupload fields e.g., by calling <code>$(&quot;input.cloudinary-fileupload[type=file]&quot;).cloudinary_fileupload();</code>
+
+
+== Usage ==
+
+The following blog post details the process of setting up a jQuery based file upload. http://cloudinary.com/blog/direct_image_uploads_from_the_browser_to_the_cloud_with_jquery
+
+
+The Cloudinary Documentation can be found at: http://cloudinary.com/documentation
+
+
+=== Core JavaScript library ===
+
+The Core Cloudinary JavaScript library provides several classes, defined under the &quot;<code>cloudinary</code>&quot; domain.
+
+
+==== Configuration ====
+
+Start by instantiating a new Cloudinary class:
+
+
+===== Explicitly =====
+ <code>var cl = cloudinary.Cloudinary.new( { cloud_name: &quot;demo&quot;});</code>
+===== Using the config function =====
+ <code>// Using the config functionvar cl = cloudinary.Cloudinary.new();cl.config( &quot;cloud_name&quot;, &quot;demo&quot;);</code>
+===== From meta tags in the current HTML document =====
+
+When using the library in a browser environment, you can use meta tags to define the configuration options.
+
+
+:information_source: The <code>init()</code> function is a convenience function that invokes both <code>fromDocument()</code> and <code>fromEnvironment()</code>.
+
+ <code>// Add the following to the header tag:// &lt;meta name=&quot;cloudinary_cloud_name&quot; content=&quot;demo&quot;&gt;var cl = cloudinary.Cloudinary.new();cl.fromDocument();// orcl.init();</code>
+===== From environment variables =====
+
+When using the library in a backend environment, such as NodeJS, you can use an environment variable to define the configuration options.
+
+ <code>// CLOUDINARY_URL=cloudinary://demovar cl = cloudinary.Cloudinary.new();cl.fromEnvironment();// orcl.init();</code>
+==== URL generation ====
+ <code>cl.url(&quot;sample&quot;)// &quot;http://res.cloudinary.com/demo/image/upload/sample&quot;cl.url( &quot;sample&quot;, { width: 100, crop: &quot;fit&quot;})// &quot;http://res.cloudinary.com/demo/image/upload/c_fit,w_100/sample&quot;</code>
+==== HTML tag generation ====
+
+You can generate HTML tags in several ways:
+
+
+Cloudinary::image() generates a DOM tag, and prepares it for responsive functionality. This is the same functionality as <code>$.cloudinary.image()</code>. (When using the jQuery plugin, the <code>src-cache</code> data attribute is stored using jQuery's <code>data()</code> method and so is not visible.)
+
+ <code>cl.image(&quot;sample&quot;)//&lt;img src=​&quot;http:​/​/​res.cloudinary.com/​demo/​image/​upload/​sample&quot; data-src-cache=​&quot;http:​/​/​res.cloudinary.com/​demo/​image/​upload/​sample&quot;&gt;​</code>
+You can generate an image Tag using the <code>imageTag</code> function:
+
+ <code>var tag = cl.imageTag(&quot;sample&quot;);tag.toHtml();// &lt;img src=&quot;http://res.cloudinary.com/demo/image/upload/sample&quot;&gt;tag.transformation().crop(&quot;fit&quot;).width(100).toHtml();// &lt;img src=&quot;http://res.cloudinary.com/demo/image/upload/c_fit,w_100/sample&quot;&gt;</code>
+You can also use <code>ImageTag</code> independently:
+
+ <code>var tag = cloudinary.ImageTag.new( &quot;sample&quot;, { cloud_name: &quot;some_other_cloud&quot; });tag.toHtml();// &lt;img src=&quot;http://res.cloudinary.com/some_other_cloud/image/upload/sample&quot;&gt;</code>
+==== Transformation ====
+
+In addition to using a plain object to define transformations or using the builder methods (both described above), you can define transformations by using the Transformation class:
+
+ <code>var tr = cloudinary.Transformation.new();tr.crop(&quot;fit&quot;).width(100);tr.serialize()// &quot;c_fit,w_100&quot;</code>
+You can also chain transformations together:
+
+ <code>var tr = cloudinary.Transformation.new();tr.width(10).crop('fit').chain().angle(15).serialize()// &quot;c_fit,w_10/a_15&quot;</code>
+[[Image:see_more_bullet.png]] '''See [http://cloudinary.com/documentation/jquery_image_manipulation our documentation] for more information about displaying and transforming images using jQuery'''.
+
+
+=== Other Cloudinary JavaScript libraries ===
+
+==== jQuery plugin ====
+
+If you are using jQuery, you can take advantage of the Cloudinary jQuery plugin at https://github.com/cloudinary/bower-cloudinary-jquery. #### jQuery File upload The Cloudinary jQuery File Upload library extends the Cloudinary jQuery plugin that utilizes the [https://blueimp.github.io/jQuery-File-Upload/ Blueimp jQuery File Upload library].
+
+
+== Additional resources ==
+
+Additional resources are available at:
+
+
+* [http://cloudinary.com Website]
+* [http://cloudinary.com/documentation Documentation]
+* [http://support.cloudinary.com/forums Knowledge Base]
+* [http://cloudinary.com/documentation/jquery_integration Documentation for jQuery integration]
+* [http://cloudinary.com/documentation/jquery_image_upload jQuery image upload documentation]
+* [http://cloudinary.com/documentation/jquery_image_manipulation jQuery image manipulation documentation]
+* [http://cloudinary.com/documentation/image_transformations Image transformations documentation]
+
+== Support ==
+
+You can [https://github.com/cloudinary/cloudinary_js/issues open an issue through GitHub].
+
+
+Contact us at [http://cloudinary.com/contact http://cloudinary.com/contact].
+
+
+Stay tuned for updates, tips and tutorials: [http://cloudinary.com/blog Blog], [https://twitter.com/cloudinary Twitter], [http://www.facebook.com/Cloudinary Facebook].
+
+
+== License ==
+
+Released under the MIT license. ## Setup
+
+
+In order to properly use this library you have to provide it with a few configuration parameters:
+
+
+Required:
+
+
+* <code>cloud_name</code> - The cloudinary cloud name associated with your Cloudinary account.
+
+Optional:
+
+
+* <code>private_cdn</code>, <code>secure_distribution</code>, <code>cname</code>, <code>cdn_subdomain</code> - Please refer to [http://cloudinary.com/documentation/rails_additional_topics#configuration_options Cloudinary Documentation] for information on these parameters.
+
+To set these configuration parameters use the <code>Cloudinary::config</code> function (see below).
+
+
+Note:
+
+
+When loading the jQuery Cloudinary library directly (using a <code>script</code> tag), the library automatically converts the relevant fileupload tags to utilize the upload functionality. If jquery.cloudinary is loaded as an [https://github.com/amdjs/amdjs-api/blob/master/AMD.md AMD] however, you need to initialize the Cloudinary fileupload fields e.g., by calling <code>$(&quot;input.cloudinary-fileupload[type=file]&quot;).cloudinary_fileupload();</code>
+
+
+== Usage ==
+
+The following blog post details the process of setting up a jQuery based file upload. http://cloudinary.com/blog/direct_image_uploads_from_the_browser_to_the_cloud_with_jquery
+
+
+The Cloudinary Documentation can be found at: http://cloudinary.com/documentation
+
+
+=== Core JavaScript library ===
+
+The Core Cloudinary JavaScript library provides several classes, defined under the &quot;<code>cloudinary</code>&quot; domain.
+
+
+==== Configuration ====
+
+Start by instantiating a new Cloudinary class:
+
+
+===== Explicitly =====
+ <code>var cl = cloudinary.Cloudinary.new( { cloud_name: &quot;demo&quot;});</code>
+===== Using the config function =====
+ <code>// Using the config functionvar cl = cloudinary.Cloudinary.new();cl.config( &quot;cloud_name&quot;, &quot;demo&quot;);</code>
+===== From meta tags in the current HTML document =====
+
+When using the library in a browser environment, you can use meta tags to define the configuration options.
+
+
+:information_source: The <code>init()</code> function is a convenience function that invokes both <code>fromDocument()</code> and <code>fromEnvironment()</code>.
+
+ <code>// Add the following to the header tag:// &lt;meta name=&quot;cloudinary_cloud_name&quot; content=&quot;demo&quot;&gt;var cl = cloudinary.Cloudinary.new();cl.fromDocument();// orcl.init();</code>
+===== From environment variables =====
+
+When using the library in a backend environment, such as NodeJS, you can use an environment variable to define the configuration options.
+
+ <code>// CLOUDINARY_URL=cloudinary://demovar cl = cloudinary.Cloudinary.new();cl.fromEnvironment();// orcl.init();</code>
+==== URL generation ====
+ <code>cl.url(&quot;sample&quot;)// &quot;http://res.cloudinary.com/demo/image/upload/sample&quot;cl.url( &quot;sample&quot;, { width: 100, crop: &quot;fit&quot;})// &quot;http://res.cloudinary.com/demo/image/upload/c_fit,w_100/sample&quot;</code>
+==== HTML tag generation ====
+
+You can generate HTML tags in several ways:
+
+
+Cloudinary::image() generates a DOM tag, and prepares it for responsive functionality. This is the same functionality as <code>$.cloudinary.image()</code>. (When using the jQuery plugin, the <code>src-cache</code> data attribute is stored using jQuery's <code>data()</code> method and so is not visible.)
+
+ <code>cl.image(&quot;sample&quot;)//&lt;img src=​&quot;http:​/​/​res.cloudinary.com/​demo/​image/​upload/​sample&quot; data-src-cache=​&quot;http:​/​/​res.cloudinary.com/​demo/​image/​upload/​sample&quot;&gt;​</code>
+You can generate an image Tag using the <code>imageTag</code> function:
+
+ <code>var tag = cl.imageTag(&quot;sample&quot;);tag.toHtml();// &lt;img src=&quot;http://res.cloudinary.com/demo/image/upload/sample&quot;&gt;tag.transformation().crop(&quot;fit&quot;).width(100).toHtml();// &lt;img src=&quot;http://res.cloudinary.com/demo/image/upload/c_fit,w_100/sample&quot;&gt;</code>
+You can also use <code>ImageTag</code> independently:
+
+ <code>var tag = cloudinary.ImageTag.new( &quot;sample&quot;, { cloud_name: &quot;some_other_cloud&quot; });tag.toHtml();// &lt;img src=&quot;http://res.cloudinary.com/some_other_cloud/image/upload/sample&quot;&gt;</code>
+==== Transformation ====
+
+In addition to using a plain object to define transformations or using the builder methods (both described above), you can define transformations by using the Transformation class:
+
+ <code>var tr = cloudinary.Transformation.new();tr.crop(&quot;fit&quot;).width(100);tr.serialize()// &quot;c_fit,w_100&quot;</code>
+You can also chain transformations together:
+
+ <code>var tr = cloudinary.Transformation.new();tr.width(10).crop('fit').chain().angle(15).serialize()// &quot;c_fit,w_10/a_15&quot;</code>
+[[Image:see_more_bullet.png]] '''See [http://cloudinary.com/documentation/jquery_image_manipulation our documentation] for more information about displaying and transforming images using jQuery'''.
+
+
+=== Other Cloudinary JavaScript libraries ===
+
+==== jQuery plugin ====
+
+If you are using jQuery, you can take advantage of the Cloudinary jQuery plugin at https://github.com/cloudinary/bower-cloudinary-jquery. #### jQuery File upload The Cloudinary jQuery File Upload library extends the Cloudinary jQuery plugin that utilizes the [https://blueimp.github.io/jQuery-File-Upload/ Blueimp jQuery File Upload library].
+
+
+== Additional resources ==
+
+Additional resources are available at:
+
+
+* [http://cloudinary.com Website]
+* [http://cloudinary.com/documentation Documentation]
+* [http://support.cloudinary.com/forums Knowledge Base]
+* [http://cloudinary.com/documentation/jquery_integration Documentation for jQuery integration]
+* [http://cloudinary.com/documentation/jquery_image_upload jQuery image upload documentation]
+* [http://cloudinary.com/documentation/jquery_image_manipulation jQuery image manipulation documentation]
+* [http://cloudinary.com/documentation/image_transformations Image transformations documentation]
+
+== Support ==
+
+You can [https://github.com/cloudinary/cloudinary_js/issues open an issue through GitHub].
+
+
+Contact us at [http://cloudinary.com/contact http://cloudinary.com/contact].
+
+
+Stay tuned for updates, tips and tutorials: [http://cloudinary.com/blog Blog], [https://twitter.com/cloudinary Twitter], [http://www.facebook.com/Cloudinary Facebook].
+
+
+== License ==
+
+Released under the MIT license.
+
